@@ -1,0 +1,22 @@
+blocks:
+- all_upstream_blocks_executed: true
+  color: null
+  configuration: {}
+  downstream_blocks: []
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: snowflakeRawExport
+  status: updated
+  type: data_exporter
+  upstream_blocks: []
+  uuid: snowflakerawexport
+data_integration: null
+description: null
+extensions: {}
+name: solitary smoke
+type: python
+updated_at: '2025-02-12 00:04:04'
+uuid: solitary_smoke
+widgets: []

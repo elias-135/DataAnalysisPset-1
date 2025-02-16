@@ -1,0 +1,36 @@
+if 'transformer' not in globals():
+    from mage_ai.data_preparation.decorators import transformer
+if 'test' not in globals():
+    from mage_ai.data_preparation.decorators import test
+
+
+@transformer
+def transform(tables, *args, **kwargs):
+    
+    #droppear duplicados
+    for name in tables:
+        tables[name].drop_duplicates(inplace=True)
+
+    #eliminar valores de orders los cuales son NaN
+
+    tables["ORDERS"]=tables["ORDERS"][tables["ORDERS"]['add_to_cart_order'].notna()]
+
+    #eliminacion de nulos de instacart
+    tables["INSTACART"].loc[tables["INSTACART"]["order_number"]<2,"days_since_prior_order"]=0
+
+    #convertir order_number de instacart en tipo int
+    tables["INSTACART"]["order_number"]=tables["INSTACART"]["order_number"].astype(int)
+
+    #droppear todos las columnas de productos que no tienen nombre ni precio
+    tables["PRODUCTS"]=tables["PRODUCTS"].dropna()
+
+
+    return tables
+
+
+@test
+def test_output(output, *args) -> None:
+    """
+    Template code for testing the output of the block.
+    """
+    assert output is not None, 'The output is undefined'

@@ -1,0 +1,60 @@
+if 'transformer' not in globals():
+    from mage_ai.data_preparation.decorators import transformer
+if 'test' not in globals():
+    from mage_ai.data_preparation.decorators import test
+import pandas as pd
+
+@transformer
+def transform(tables: dict, *args, **kwargs):
+    
+    #eliminacion de duplicados en todas las tablas
+    for name in tables:
+        tables[name] = pd.DataFrame(tables[name])
+        tables[name].drop_duplicates(inplace=True)
+
+    print(tables["orders"])
+    
+    #eliminacion de filas que tienen el valor nulo en add_to_cart_order
+    tables["orders"]=tables["orders"][tables["orders"]["add_to_cart_order"].notna()]
+
+    #Convertir a 0 los valores de days_since_prior_order en 'INSTACART'
+
+    tables["instacart"].loc[tables["instacart"]["order_number"]<2,"days_since_prior_order"]=0
+
+    #Convertir en int order number
+    tables["instacart"]["order_number"]=tables["instacart"]["order_number"].astype(int)
+
+    #Convertir a NaN verdadero para posterirmente reliminar todos los valores de NAN
+    tables["products"]["product_name"].replace(["", "NaN"], pd.NA, inplace=True)
+    tables["products"]=tables["products"].dropna()
+
+    #Realizar el STAR ESQUEMA
+
+    factOrder=tables["ORDERS"]
+    factInstaCart=tables["instacart"]
+
+    productsDim=tables["products"]
+
+    aislesNames=tables["aisles"]["aisle"]
+    tables["products"]["aisle_id"]=aislesNames
+
+    departmentNames=tables["departments"]["department"]
+    tables["products"]["department_id"]=departmentNames
+
+
+
+
+
+    return {
+
+        "factOrder":factOrder
+        "factInstaCart":tables[""]
+    }
+
+
+@test
+def test_output(output, *args) -> None:
+    """
+    Template code for testing the output of the block.
+    """
+    assert output is not None, 'The output is undefined'
